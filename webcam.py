@@ -12,6 +12,10 @@ import function.helper as helper
 import pandas as pd
 import csv
 
+now = datetime.now()
+dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+# dateStr = today.strftime("%d/%m/%Y")
+
 # load model
 yolo_LP_detect = torch.hub.load(
     'yolov5', 'custom', path='model/LP_detector_nano_61.pt', force_reload=True, source='local')
@@ -23,7 +27,18 @@ prev_frame_time = 0
 new_frame_time = 0
 
 vid = cv2.VideoCapture(0)
-# vid = cv2.VideoCapture("1.mp4")
+# vid = cv2.VideoCapture("./test_image/test.mp4")
+
+
+def check_plate(plate):
+    ub_list_plate = ["65A19777", "65A29999"]
+    for i in ub_list_plate:
+        if (i == plate):
+            return 1
+        else:
+            return 0
+
+
 plate_text = []
 while (True):
     ret, frame = vid.read()
@@ -50,18 +65,39 @@ while (True):
                     yolo_license_plate, utils_rotate.deskew(crop_img, cc, ct))
                 if lp != "unknown":
                     list_read_plates.add(lp)
-                    cv2.putText(frame, lp, (int(plate[0]), int(
-                        plate[1]-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
+                    (text_width, text_height) = cv2.getTextSize(
+                        lp, cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, thickness=1)[0]
+                    text_offset_x = int(plate[0])
+                    text_offset_y = int(plate[1]-10)
+                    # make the coords of the box with a small padding of two pixels
+                    box_coords = ((text_offset_x, text_offset_y), (text_offset_x +
+                                  text_width + 60, text_offset_y-30 - text_height - 2))
+                    cv2.rectangle(
+                        frame, box_coords[0], box_coords[1], (0, 0, 0), cv2.FILLED)
+                    cv2.putText(frame, "Detect: Car", (int(plate[0]), int(
+                        plate[1]-40)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
+                    # if (check_plate(list_read_plates) == 1):
+                    #     cv2.putText(frame, "Status: Xe co quan UBND", (int(plate[0]), int(
+                    #         plate[1]-30)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
+                    # else:
+                    #     cv2.putText(frame, "Status: Unknow Data", (int(plate[0]), int(
+                    #         plate[1]-30)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
+                    cv2.putText(frame, "Status: Xe co quan UBND", (int(plate[0]), int(
+                        plate[1]-30)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
+                    cv2.putText(frame, "Time: "+dt_string, (int(plate[0]), int(
+                        plate[1]-20)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
+                    cv2.putText(frame, "Plate: "+lp, (int(plate[0]), int(
+                        plate[1]-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
                     flag = 1
                     break
             if flag == 1:
                 break
-    new_frame_time = time.time()
-    fps = 1/(new_frame_time-prev_frame_time)
-    prev_frame_time = new_frame_time
-    fps = int(fps)
-    cv2.putText(frame, str(fps), (7, 70), cv2.FONT_HERSHEY_SIMPLEX,
-                3, (100, 255, 0), 3, cv2.LINE_AA)
+    # new_frame_time = time.time()
+    # fps = 1/(new_frame_time-prev_frame_time)
+    # prev_frame_time = new_frame_time
+    # fps = int(fps)
+    # cv2.putText(frame, str(fps), (7, 70), cv2.FONT_HERSHEY_SIMPLEX,
+    #             3, (100, 255, 0), 3, cv2.LINE_AA)
     cv2.imshow('frame', frame)
     plate_text += list_read_plates
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -69,20 +105,6 @@ while (True):
 
 vid.release()
 cv2.destroyAllWindows()
-
-
-def check_plate(plate):
-    ub_list_plate = ["65A19777", "65A29999"]
-    for i in ub_list_plate:
-        if (i == plate):
-            return 1
-        else:
-            return 0
-
-
-now = datetime.now()
-dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-# dateStr = today.strftime("%d/%m/%Y")
 
 
 def write_csv_plate(dataw, element):
@@ -96,6 +118,7 @@ def write_csv_plate(dataw, element):
         # writer.writerow([dataw,"14:54 29-10-2023",element])
 
 # from openpyxl import load_workbook
+
 
 def write_excel_plate(dataw, element):
     marks_data = pd.DataFrame(
@@ -118,14 +141,14 @@ def write_text_plate(dataw, time, note):
 
 
 data = ""
-for plt in plate_text:
-    # print(check_plate(plt))
-    if (check_plate(plt) == 1):
-        #    write_text_plate(plt,"","Co quan UBND")
-        write_csv_plate(plt, "Co quan UBND")
-    else:
-        #    write_text_plate(plt,"","Khong co du lieu")
-        write_csv_plate(plt, "Khong co du lieu")
+# for plt in plate_text:
+#     # print(check_plate(plt))
+#     if (check_plate(plt) == 1):
+#         #    write_text_plate(plt,"","Co quan UBND")
+#         write_csv_plate(plt, "Co quan UBND")
+#     else:
+#         #    write_text_plate(plt,"","Khong co du lieu")
+#         write_csv_plate(plt, "Khong co du lieu")
 
 
 print("============================")
