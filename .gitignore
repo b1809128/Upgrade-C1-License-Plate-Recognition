@@ -1,4 +1,5 @@
-yolov5
+/yolov5
+/FlaskServer/yolov5
 /FlaskServer/test_image
 /FlaskServer/function
 /FlaskServer/model
