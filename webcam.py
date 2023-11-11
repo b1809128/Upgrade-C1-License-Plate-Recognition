@@ -98,7 +98,7 @@ while (True):
     # fps = int(fps)
     # cv2.putText(frame, str(fps), (7, 70), cv2.FONT_HERSHEY_SIMPLEX,
     #             3, (100, 255, 0), 3, cv2.LINE_AA)
-    cv2.imshow('frame', frame)
+    cv2.imshow('HE THONG NHAN DANG BIEN SO BANG HINH ANH', frame)
     plate_text += list_read_plates
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
@@ -151,9 +151,9 @@ data = ""
 #         write_csv_plate(plt, "Khong co du lieu")
 
 
-print("============================")
-print("Danh sach UBND chap nhan luu thong")
-print(["65A19777", "65A29999"])
-print("Danh sach UBND camera ghi nhan duoc")
-print(plate_text)
-print('Export to Excel File successfully.')
+# print("============================")
+# print("Danh sach UBND chap nhan luu thong")
+# print(["65A19777", "65A29999"])
+# print("Danh sach UBND camera ghi nhan duoc")
+# print(plate_text)
+# print('Export to Excel File successfully.')

@@ -10,9 +10,10 @@ import time
 import argparse
 import function.helper as helper
 
-ap = argparse.ArgumentParser()
-ap.add_argument('-i', '--image', required=True, help='path to input image')
-args = ap.parse_args()
+# ap = argparse.ArgumentParser()
+# ap.add_argument('-i', '--image', required=True, help='path to input image')
+# args = ap.parse_args()
+# print(args.image)
 
 yolo_LP_detect = torch.hub.load(
     'yolov5', 'custom', path='model/LP_detector.pt', force_reload=True, source='local')
@@ -20,10 +21,11 @@ yolo_license_plate = torch.hub.load(
     'yolov5', 'custom', path='model/LP_ocr.pt', force_reload=True, source='local')
 yolo_license_plate.conf = 0.60
 
-img = cv2.imread(args.image)
-plates = yolo_LP_detect(img, size=640)
+# img = cv2.imread(args.image)
+img = cv2.imread("test_image/4.jpg")
+plates = yolo_LP_detect(img, size=1280)
 
-plates = yolo_LP_detect(img, size=640)
+plates = yolo_LP_detect(img, size=1280)
 list_plates = plates.pandas().xyxy[0].values.tolist()
 list_read_plates = set()
 
@@ -76,6 +78,8 @@ else:
                     break
             if flag == 1:
                 break
-cv2.imshow('frame', img)
+cv2.imshow('HE THONG NHAN DANG BIEN SO BANG HINH ANH', img)
 cv2.waitKey()
 cv2.destroyAllWindows()
+
+# python lp_image.py -i test_image/3.jpg

@@ -1,11 +1,6 @@
-yolov5/
-test_image/
-check_cache/
-/draw_image.py
-/test.py
-/res.jpg
-cache.jpg
-cache_ch.jpg
-edge.jpg
-line.jpg
-crop.jpg
+yolov5
+/FlaskServer/test_image
+/FlaskServer/function
+/FlaskServer/model
+/FlaskServer/result
+/FlaskServer/training
